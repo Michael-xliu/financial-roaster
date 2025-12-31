@@ -1108,6 +1108,10 @@
       .personality-emoji {
         font-size: 2rem;
       }
+
+      .desktop-only {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -1327,7 +1331,7 @@ Be honest about your financial disasters... 💸"
                         Your financial decisions are more chaotic than a cryptocurrency market crash...
                       </div>
                       <div class="card-footer">
-                        <div class="mini-score">Financial Chaos: <span id="mini-chaos">87</span>/100</div>
+                        <div class="mini-score desktop-only">Financial Chaos: <span id="mini-chaos">87</span>/100</div>
                         <div>FinancialRoaster.app</div>
                       </div>
                     </div>
@@ -1447,6 +1451,27 @@ Be honest about your financial disasters... 💸"
       if (shareSection) {
         shareSection.style.display = 'none';
       }
+
+      // Clear all personal data and reset file input
+      currentFile = null;
+      fileInput.value = '';
+      hideFileInfo();
+      hideError();
+
+      // Clear manual input
+      manualSpendingInput.value = '';
+      updateCharCount();
+
+      // Clear stored results data for privacy
+      currentAdvice = '';
+      currentChaosScore = 50;
+
+      // Clear advice text and canvas
+      if (adviceText) adviceText.innerHTML = '';
+      if (roastCanvas) {
+        const ctx = roastCanvas.getContext('2d');
+        ctx.clearRect(0, 0, roastCanvas.width, roastCanvas.height);
+      }
     }
 
     async function selectSample(sampleId) {
@@ -1539,7 +1564,13 @@ Be honest about your financial disasters... 💸"
     }
 
     // Drag and drop functionality
-    uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('click', () => {
+      // Reset UI and clear all data when upload area is clicked
+      if (results.style.display === 'block' || results.classList.contains('show')) {
+        resetUI();
+      }
+      fileInput.click();
+    });
 
     uploadArea.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -1989,6 +2020,11 @@ Be honest about your financial disasters... 💸"
 
     // Random sample button event listener
     randomSampleBtn.addEventListener('click', () => {
+      // Reset UI and clear all data when random sample is clicked after results
+      if (results.style.display === 'block' || results.classList.contains('show')) {
+        resetUI();
+      }
+
       const randomSample = getRandomSample();
       if (randomSample) {
         console.log('Random sample selected:', randomSample.id);
@@ -2017,8 +2053,12 @@ Be honest about your financial disasters... 💸"
       const spendingText = manualSpendingInput.value.trim();
       if (!spendingText || spendingText.length < 10) return;
 
-      // Show loading state
+      // Show loading state - first clear any existing results and data
       resetUI();
+
+      // Restore the manual input text (since resetUI clears it)
+      manualSpendingInput.value = spendingText;
+      updateCharCount();
       progressContainer.style.display = 'block';
       actionBtn.style.display = 'block';
       actionBtn.disabled = true;

@@ -5,6 +5,10 @@ from pathlib import Path
 import datetime as dt
 import hashlib
 import json
+import os
+import shutil
+import threading
+import time
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from core.simple_graph import build_graph, GraphState, Transaction
@@ -52,6 +56,12 @@ FRONTEND_DIR = BASE_DIR / "frontend"
 if FRONTEND_DIR.exists():
     # Serve static assets (js/css/images) from /static to avoid intercepting API routes.
     app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
+
+
+@app.on_event("startup")
+async def startup_event():
+    """Clean any old personal data on startup."""
+    cleanup_personal_data()
 
 
 def save_lines_to_file(lines: List[str]):
@@ -120,9 +130,57 @@ def save_advice_cache(file_hash: str, tone: str, advice: str):
     path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
 
 
+def cleanup_personal_data(file_hash: str = None):
+    """Remove personal data from cache and saved files."""
+    try:
+        if file_hash:
+            # Clean specific file hash
+            parse_path = _parse_cache_path(file_hash)
+            if parse_path.exists():
+                parse_path.unlink()
+
+            advice_path_roast = _advice_cache_path(file_hash, "roast")
+            if advice_path_roast.exists():
+                advice_path_roast.unlink()
+
+            advice_path_coach = _advice_cache_path(file_hash, "coach")
+            if advice_path_coach.exists():
+                advice_path_coach.unlink()
+        else:
+            # Clean all cached data older than 1 hour
+            current_time = time.time()
+
+            for cache_file in CACHE_DIR.glob("*.json"):
+                if current_time - cache_file.stat().st_mtime > 3600:  # 1 hour
+                    cache_file.unlink()
+
+            for ocr_file in SAVED_DIR.glob("ocr_lines_*.txt"):
+                if current_time - ocr_file.stat().st_mtime > 3600:  # 1 hour
+                    ocr_file.unlink()
+
+    except Exception as e:
+        print(f"Warning: Failed to cleanup data: {e}")
+
+
+def schedule_cleanup(file_hash: str, delay_seconds: int = 300):  # 5 minutes
+    """Schedule cleanup of personal data after a delay."""
+    def delayed_cleanup():
+        time.sleep(delay_seconds)
+        cleanup_personal_data(file_hash)
+
+    threading.Thread(target=delayed_cleanup, daemon=True).start()
+
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.post("/cleanup")
+def cleanup_all_data():
+    """Manually trigger cleanup of all personal data."""
+    cleanup_personal_data()
+    return {"status": "cleaned"}
 
 
 @app.post("/analyze", response_model=AnalyzeResponse)
@@ -284,6 +342,10 @@ async def upload_and_analyze(
             chaos_score = chaos_result.get("chaos_score", 50)
         except:
             chaos_score = 50
+
+        # Schedule automatic cleanup of personal data in 5 minutes even for cached results
+        schedule_cleanup(file_hash)
+
         return AnalyzeResponse(tone=tone, advice=cached_advice, chaos_score=chaos_score, lines=None)
 
     state = GraphState(transactions=transactions, tone=tone)
@@ -294,6 +356,10 @@ async def upload_and_analyze(
     chaos_score = result.chaos_score if hasattr(result, "chaos_score") else result.get("chaos_score", 0)
     save_advice_cache(file_hash, tone, advice)
     save_lines_to_file(ocr_lines)
+
+    # Schedule automatic cleanup of personal data in 5 minutes
+    schedule_cleanup(file_hash)
+
     return AnalyzeResponse(tone=tone_out, advice=advice, chaos_score=chaos_score, lines=None)
 
 

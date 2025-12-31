@@ -1,0 +1,28 @@
+# FastAPI and web server
+fastapi>=0.111
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
+
+# Data validation
+pydantic>=2.8
+
+# LangChain for AI/ML workflows
+langchain>=0.2
+langgraph>=0.1
+langchain-aws>=0.1.0  # For AWS Bedrock integration
+
+# AWS SDK for Bedrock
+boto3>=1.34
+
+# Free OCR and Document Processing
+pymupdf>=1.23.0  # PyMuPDF (fitz) for fast PDF text extraction
+pdfplumber>=0.10.0  # Fallback PDF processing with table support
+easyocr>=1.7.0  # Best free OCR for images
+pillow>=10.0.0  # Image processing for OCR
+numpy>=1.24.0  # Required by EasyOCR
+pytesseract>=0.3.10  # Fallback OCR option
+
+# Optional: Install Tesseract OCR engine separately
+# Windows: Download from https://github.com/UB-Mannheim/tesseract/wiki
+# Linux: sudo apt install tesseract-ocr
+# Mac: brew install tesseract

@@ -360,21 +360,43 @@
     /* Responsive Design */
     @media (max-width: 640px) {
       .main-card {
-        padding: 1.5rem;
-        margin: 1rem;
+        padding: 1rem;
+        margin: 0.5rem;
       }
 
       .title {
-        font-size: 2rem;
+        font-size: 1.75rem;
+      }
+
+      .subtitle {
+        font-size: 0.95rem;
       }
 
       .upload-area {
-        padding: 2rem 1rem;
+        padding: 1.5rem 1rem;
+      }
+
+      .upload-icon {
+        font-size: 2rem;
+      }
+
+      .upload-text {
+        font-size: 1rem;
       }
 
       .mode-btn {
         padding: 0.75rem 1rem;
         font-size: 0.9rem;
+      }
+
+      .action-btn {
+        font-size: 1rem;
+        padding: 0.875rem 1.5rem;
+      }
+
+      .chaos-label {
+        font-size: 0.8rem;
+        letter-spacing: 1px;
       }
     }
 
@@ -1025,6 +1047,7 @@
       }
     }
 
+    /* Mobile optimization for phones */
     @media (max-width: 640px) {
       .share-actions {
         grid-template-columns: 1fr;
@@ -1039,6 +1062,51 @@
       #roast-canvas {
         width: 280px;
         height: 280px;
+      }
+    }
+
+    /* Extra small mobile screens */
+    @media (max-width: 480px) {
+      .main-card {
+        padding: 0.75rem;
+        margin: 0.25rem;
+      }
+
+      .title {
+        font-size: 1.5rem;
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
+      }
+
+      .logo {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+      }
+
+      .flip-card-container {
+        width: 250px;
+        height: 350px;
+      }
+
+      .chaos-number {
+        font-size: 3.5rem;
+      }
+
+      .manual-input-title {
+        font-size: 1rem;
+      }
+
+      .personality-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+      }
+
+      .personality-emoji {
+        font-size: 2rem;
       }
     }
   </style>

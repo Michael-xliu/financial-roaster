@@ -898,6 +898,151 @@
       transform: rotate(180deg);
     }
 
+    /* Transaction Preview */
+    .transaction-preview {
+      margin: 1.5rem 0;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      max-height: 0;
+      overflow: hidden;
+    }
+
+    .transaction-preview.show {
+      opacity: 1;
+      transform: translateY(0);
+      max-height: 600px;
+    }
+
+    .transaction-preview-content {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid var(--border-color);
+      margin: 0 auto;
+      max-width: 500px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 0 1px var(--border-color);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Add subtle gradient overlay */
+    .transaction-preview-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--gradient);
+      opacity: 0.6;
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 1rem;
+      text-align: center;
+      justify-content: center;
+    }
+
+    .preview-header i {
+      color: var(--primary-color);
+      font-size: 1.1rem;
+      animation: pulse 2s infinite;
+    }
+
+    .transaction-list {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .transaction-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 68, 68, 0.15);
+      animation: fadeInUp 0.4s ease;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .transaction-item:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 68, 68, 0.3);
+      box-shadow: 0 4px 12px rgba(255, 68, 68, 0.1);
+    }
+
+    .transaction-item:nth-child(1) { animation-delay: 0.1s; }
+    .transaction-item:nth-child(2) { animation-delay: 0.2s; }
+    .transaction-item:nth-child(3) { animation-delay: 0.3s; }
+    .transaction-item:nth-child(4) { animation-delay: 0.4s; }
+    .transaction-item:nth-child(5) { animation-delay: 0.5s; }
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .transaction-merchant {
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .transaction-amount {
+      color: var(--primary-color);
+      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 1rem;
+    }
+
+    .transaction-memo {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      margin-top: 0.25rem;
+      font-style: italic;
+      line-height: 1.3;
+    }
+
+    .transaction-details {
+      text-align: left;
+      flex: 1;
+    }
+
+    /* Roast Sample Button styles removed - no longer needed */
+
+    @media (max-width: 640px) {
+      .transaction-preview-content {
+        padding: 1.5rem;
+        margin: 0 0.5rem;
+      }
+
+      .transaction-item {
+        padding: 0.75rem;
+      }
+
+      .transaction-merchant,
+      .transaction-amount {
+        font-size: 0.9rem;
+      }
+    }
+
     /* Manual Input Section */
     .manual-input-section {
       margin: 2rem 0;
@@ -925,6 +1070,8 @@
       padding: 0 1rem;
       font-size: 0.9rem;
       font-weight: 500;
+      position: relative;
+      z-index: 1;
     }
 
     .manual-input-title {
@@ -1144,74 +1291,33 @@
         <div class="file-size" id="file-size"></div>
       </div>
 
+      <!-- Action Button -->
+      <button class="action-btn" id="action-btn" disabled>
+        <span id="btn-text">Select a file to continue</span>
+        <div class="loading" id="loading" style="display: none;"></div>
+      </button>
+
       <!-- Random Sample Section -->
       <div class="random-sample-section" id="random-sample-section">
+        <div class="section-divider">
+          <span class="divider-text">or try a sample</span>
+        </div>
+
         <button class="random-sample-btn" id="random-sample-btn">
           <i class="fas fa-dice"></i>
           <span>Generate Random Sample</span>
         </button>
 
-        <div class="sample-info">
-          <button class="sample-info-toggle" id="sample-info-toggle">
-            <span>What kind of samples?</span>
-            <i class="fas fa-chevron-down" id="sample-info-icon"></i>
-          </button>
-
-          <div class="sample-info-content" id="sample-info-content">
-            <div class="personality-preview">
-              <div class="personality-item">
-                <span class="personality-emoji">💻</span>
-                <div class="personality-details">
-                  <strong>Silicon Valley Tech Bro</strong>
-                  <p>WeWork memberships, AirPods Max, overpriced productivity tools</p>
-                  <div class="spending-snapshot">
-                    <span class="amount">$299.99</span> AirPods Max •
-                    <span class="amount">$450.00</span> WeWork •
-                    <span class="amount">$199.99</span> Patagonia vest
-                  </div>
-                </div>
-              </div>
-
-              <div class="personality-item">
-                <span class="personality-emoji">🎓</span>
-                <div class="personality-details">
-                  <strong>Broke College Student</strong>
-                  <p>Instant ramen, textbooks never opened, Netflix subscriptions</p>
-                  <div class="spending-snapshot">
-                    <span class="amount">$3.50</span> Ramen dinner •
-                    <span class="amount">$45.00</span> Unused textbook •
-                    <span class="amount">$35.00</span> Uber Eats
-                  </div>
-                </div>
-              </div>
-
-              <div class="personality-item">
-                <span class="personality-emoji">🛍️</span>
-                <div class="personality-details">
-                  <strong>Impulse Shopping Queen</strong>
-                  <p>TikTok ad purchases, Target hauls, "limited time offers"</p>
-                  <div class="spending-snapshot">
-                    <span class="amount">$89.99</span> TikTok ad thing •
-                    <span class="amount">$234.50</span> Target haul •
-                    <span class="amount">$129.99</span> QVC panic buy
-                  </div>
-                </div>
-              </div>
-
-              <div class="personality-item">
-                <span class="personality-emoji">☕</span>
-                <div class="personality-details">
-                  <strong>Coffee Shop Regular</strong>
-                  <p>Multiple daily Starbucks visits, expensive coffee habits</p>
-                  <div class="spending-snapshot">
-                    <span class="amount">$6.45</span> Morning coffee •
-                    <span class="amount">$12.99</span> Venti 5-shot •
-                    <span class="amount">$89.99</span> Home setup
-                  </div>
-                </div>
-              </div>
+        <!-- Transaction Preview (shows briefly when sample is selected) -->
+        <div class="transaction-preview" id="transaction-preview">
+          <div class="transaction-preview-content">
+            <div class="preview-header">
+              <i class="fas fa-receipt"></i>
+              <span>Analyzing these transactions...</span>
             </div>
-            <p class="sample-note">Click "Generate Random Sample" to get roasted as one of these personalities!</p>
+            <div class="transaction-list" id="transaction-list">
+              <!-- Transactions will be populated by JavaScript -->
+            </div>
           </div>
         </div>
       </div>
@@ -1263,12 +1369,6 @@ Be honest about your financial disasters... 💸"
         </div>
         <div class="progress-text" id="progress-text">Analyzing your spending...</div>
       </div>
-
-      <!-- Action Button -->
-      <button class="action-btn" id="action-btn" disabled>
-        <span id="btn-text">Select a file to continue</span>
-        <div class="loading" id="loading" style="display: none;"></div>
-      </button>
 
       <!-- Results -->
       <div class="results" id="results">
@@ -1386,9 +1486,8 @@ Be honest about your financial disasters... 💸"
     const cursor = document.getElementById('cursor');
     const randomSampleBtn = document.getElementById('random-sample-btn');
     const randomSampleSection = document.getElementById('random-sample-section');
-    const sampleInfoToggle = document.getElementById('sample-info-toggle');
-    const sampleInfoContent = document.getElementById('sample-info-content');
-    const sampleInfoIcon = document.getElementById('sample-info-icon');
+    const transactionPreview = document.getElementById('transaction-preview');
+    const transactionList = document.getElementById('transaction-list');
 
     // Manual input elements
     const manualSpendingInput = document.getElementById('manual-spending-input');
@@ -1420,19 +1519,99 @@ Be honest about your financial disasters... 💸"
       return availableSamples[randomIndex];
     }
 
-    // Sample info toggle functionality
-    function toggleSampleInfo() {
-      const isExpanded = sampleInfoContent.classList.contains('show');
+    // Sample info toggle functionality removed - no longer needed
 
-      if (isExpanded) {
-        sampleInfoContent.classList.remove('show');
-        sampleInfoIcon.classList.remove('fa-chevron-up');
-        sampleInfoIcon.classList.add('fa-chevron-down');
-      } else {
-        sampleInfoContent.classList.add('show');
-        sampleInfoIcon.classList.remove('fa-chevron-down');
-        sampleInfoIcon.classList.add('fa-chevron-up');
+    // Transaction preview functions
+    function getSampleTransactions(sampleId) {
+      const sampleData = {
+        'tech_bro': [
+          { merchant: 'Soylent', amount: 15.99, memo: 'Meal replacement for productivity' },
+          { merchant: 'Apple Store', amount: 299.99, memo: 'AirPods Max for focus' },
+          { merchant: 'WeWork', amount: 450.00, memo: 'Hot desk membership' },
+          { merchant: 'Patagonia', amount: 199.99, memo: 'Startup uniform vest' }
+        ],
+        'college_student': [
+          { merchant: '7-Eleven', amount: 3.50, memo: 'Instant ramen dinner' },
+          { merchant: 'Amazon', amount: 45.00, memo: 'Textbook I will never open' },
+          { merchant: 'Netflix', amount: 8.99, memo: 'Procrastination fuel' },
+          { merchant: 'Uber Eats', amount: 35.00, memo: 'Too lazy to walk to cafeteria' }
+        ],
+        'impulse_shopper': [
+          { merchant: 'Amazon', amount: 89.99, memo: 'Thing I saw in TikTok ad' },
+          { merchant: 'Target', amount: 234.50, memo: 'Went for shampoo, bought everything' },
+          { merchant: 'QVC', amount: 129.99, memo: 'Limited time offer panic buy' },
+          { merchant: 'Best Buy', amount: 199.99, memo: 'Gadget I will use once' }
+        ],
+        'coffee_addict': [
+          { merchant: 'Starbucks', amount: 6.45, memo: 'New Year resolution lasted 1 hour' },
+          { merchant: 'Starbucks', amount: 12.99, memo: 'Venti with 5 shots' },
+          { merchant: 'Blue Bottle', amount: 15.99, memo: 'Fancy single origin' },
+          { merchant: 'Nespresso', amount: 89.99, memo: 'Home setup to save money (lol)' }
+        ]
+      };
+      return sampleData[sampleId] || [];
+    }
+
+    let currentSampleId = null; // Store the current sample ID for processing
+
+    function showTransactionPreview(transactions, sampleId = null) {
+      console.log('=== showTransactionPreview START ===');
+      console.log('Transactions received:', transactions);
+      console.log('Sample ID:', sampleId);
+      console.log('transactionList element:', transactionList);
+      console.log('transactionPreview element:', transactionPreview);
+
+      if (!transactionList || !transactionPreview) {
+        console.error('Required elements not found!', {transactionList, transactionPreview});
+        return;
       }
+
+      // Store the sample ID for later processing
+      currentSampleId = sampleId;
+
+      // Clear previous transactions
+      transactionList.innerHTML = '';
+      console.log('Cleared previous transactions');
+
+      // Create transaction items
+      transactions.forEach((transaction, index) => {
+        const item = document.createElement('div');
+        item.className = 'transaction-item';
+        item.innerHTML = `
+          <div class="transaction-details">
+            <div class="transaction-merchant">${transaction.merchant}</div>
+            ${transaction.memo ? `<div class="transaction-memo">${transaction.memo}</div>` : ''}
+          </div>
+          <div class="transaction-amount">$${transaction.amount.toFixed(2)}</div>
+        `;
+        transactionList.appendChild(item);
+        console.log(`Added transaction ${index + 1}:`, transaction.merchant, `$${transaction.amount}`);
+      });
+
+      console.log('Total transaction items in DOM:', transactionList.children.length);
+
+      // Show the preview
+      transactionPreview.classList.add('show');
+      console.log('Added "show" class to transaction preview');
+
+      // Check after adding show class
+      setTimeout(() => {
+        console.log('After adding "show" class:');
+        console.log('- classList:', transactionPreview.className);
+        console.log('- computed display:', window.getComputedStyle(transactionPreview).display);
+        console.log('- computed opacity:', window.getComputedStyle(transactionPreview).opacity);
+        console.log('- computed maxHeight:', window.getComputedStyle(transactionPreview).maxHeight);
+        console.log('- element visible:', transactionPreview.offsetHeight > 0);
+        console.log('=== showTransactionPreview END ===');
+      }, 100);
+    }
+
+    function hideTransactionPreview() {
+      console.log('=== hideTransactionPreview called ===');
+      console.log('Before removing show class:', transactionPreview.className);
+      transactionPreview.classList.remove('show');
+      console.log('After removing show class:', transactionPreview.className);
+      console.log('=== hideTransactionPreview END ===');
     }
 
     function resetUI() {
@@ -1445,6 +1624,10 @@ Be honest about your financial disasters... 💸"
       btnText.textContent = 'Select a file to continue';
       loading.style.display = 'none';
       isProcessing = false;
+
+      // Hide transaction preview and clear sample ID
+      hideTransactionPreview();
+      currentSampleId = null;
 
       // Hide share section if it exists
       const shareSection = document.querySelector('.share-section');
@@ -1475,17 +1658,64 @@ Be honest about your financial disasters... 💸"
     }
 
     async function selectSample(sampleId) {
-      console.log('Sample clicked:', sampleId);
-      if (isProcessing) return;
+      console.log('=== selectSample START ===');
+      console.log('Sample ID:', sampleId);
+      console.log('isProcessing:', isProcessing);
 
-      // Hide upload area and show processing
-      resetUI();
+      if (isProcessing) {
+        console.log('Already processing, returning early');
+        return;
+      }
+
+      // Show transaction preview first
+      const transactions = getSampleTransactions(sampleId);
+      console.log('Got transactions for preview:', transactions.length, 'transactions');
+      console.log('Calling showTransactionPreview...');
+      showTransactionPreview(transactions, sampleId);
+
+      // Auto-start processing after a brief delay to let user see the transactions
+      console.log('Setting 2 second delay before auto-starting roast...');
+      setTimeout(() => {
+        // Only start processing if we haven't been interrupted by another action
+        if (currentSampleId === sampleId && !isProcessing) {
+          console.log('Auto-starting roast generation for sample:', sampleId);
+          startSampleProcessing(sampleId);
+        } else {
+          console.log('Sample processing cancelled or changed, not auto-starting');
+        }
+      }, 2000); // Show transactions for 2 seconds before auto-starting
+
+      console.log('=== selectSample END (preview shown, auto-start scheduled) ===');
+    }
+
+    // New function to start processing the sample (auto-called after showing preview)
+    async function startSampleProcessing(sampleId) {
+      console.log('=== startSampleProcessing START ===');
+      console.log('Sample ID:', sampleId);
+
+      if (isProcessing) {
+        console.log('Already processing, returning early');
+        return;
+      }
+
+      // DON'T hide transaction preview - keep it visible during processing
+      // DON'T call resetUI - we want to keep the preview showing
+
+      // Set up processing UI elements
+      console.log('Setting up processing UI while keeping preview visible...');
       fileInfo.style.display = 'none';
       progressContainer.style.display = 'block';
       actionBtn.style.display = 'block';
       actionBtn.disabled = true;
       btnText.textContent = 'Roasting this financial disaster...';
       loading.style.display = 'inline-block';
+
+      // Clear any previous results
+      results.style.display = 'none';
+      const shareSection = document.querySelector('.share-section');
+      if (shareSection) {
+        shareSection.style.display = 'none';
+      }
 
       // Add processing visual feedback
       progressFill.style.width = '30%';
@@ -1501,6 +1731,14 @@ Be honest about your financial disasters... 💸"
         progressText.textContent = 'Getting ready to destroy your spending habits...';
       }, 1000);
 
+      // Start the actual analysis
+      console.log('Starting performSampleAnalysis...');
+      performSampleAnalysis(sampleId);
+
+      console.log('=== startSampleProcessing END ===');
+    }
+
+    async function performSampleAnalysis(sampleId) {
       isProcessing = true;
 
       try {
@@ -1568,6 +1806,10 @@ Be honest about your financial disasters... 💸"
       // Reset UI and clear all data when upload area is clicked
       if (results.style.display === 'block' || results.classList.contains('show')) {
         resetUI();
+      } else {
+        // Hide transaction preview if it's showing
+        hideTransactionPreview();
+        currentSampleId = null;
       }
       fileInput.click();
     });
@@ -1728,6 +1970,13 @@ Be honest about your financial disasters... 💸"
       if (progressContainer) {
         progressContainer.style.display = 'none';
         console.log('Progress container hidden');
+      }
+
+      // Now hide the transaction preview since we're showing the final results
+      if (transactionPreview.classList.contains('show')) {
+        console.log('Hiding transaction preview as roast is complete');
+        hideTransactionPreview();
+        currentSampleId = null;
       }
 
       showResults(advice, chaosScore);
@@ -2023,6 +2272,10 @@ Be honest about your financial disasters... 💸"
       // Reset UI and clear all data when random sample is clicked after results
       if (results.style.display === 'block' || results.classList.contains('show')) {
         resetUI();
+      } else {
+        // Hide any existing transaction preview before showing new one
+        hideTransactionPreview();
+        currentSampleId = null;
       }
 
       const randomSample = getRandomSample();
@@ -2034,8 +2287,7 @@ Be honest about your financial disasters... 💸"
       }
     });
 
-    // Sample info toggle event listener
-    sampleInfoToggle.addEventListener('click', toggleSampleInfo);
+    // Sample info toggle event listener (removed - no longer needed)
 
     // Manual input functionality
     function updateCharCount() {
@@ -2120,18 +2372,29 @@ Be honest about your financial disasters... 💸"
     }
 
     // Manual input event listeners
-    manualSpendingInput.addEventListener('input', updateCharCount);
+    manualSpendingInput.addEventListener('input', () => {
+      updateCharCount();
+      // Hide transaction preview when user starts typing manually
+      if (transactionPreview.classList.contains('show')) {
+        hideTransactionPreview();
+        currentSampleId = null;
+      }
+    });
+
+    manualSpendingInput.addEventListener('focus', () => {
+      // Also hide on focus in case user clicks into the field
+      if (transactionPreview.classList.contains('show')) {
+        hideTransactionPreview();
+        currentSampleId = null;
+      }
+    });
+
     manualRoastBtn.addEventListener('click', analyzeManualSpending);
 
     // Initialize the app
     document.addEventListener('DOMContentLoaded', () => {
       loadSampleFiles();
       setupFlipCard();
-
-      // Initialize sample info as collapsed
-      sampleInfoContent.classList.remove('show');
-      sampleInfoIcon.classList.remove('fa-chevron-up');
-      sampleInfoIcon.classList.add('fa-chevron-down');
     });
   </script>
 </body>

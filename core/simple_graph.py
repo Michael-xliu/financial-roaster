@@ -35,7 +35,7 @@ class GraphState:
     red_flags: List[str] = field(default_factory=list)
 
 
-DEFAULT_BEDROCK_MODEL_ID = "anthropic.claude-3-haiku-20240307-v1:0"
+DEFAULT_BEDROCK_MODEL_ID = "global.amazon.nova-2-lite-v1:0"
 
 
 @lru_cache(maxsize=1)

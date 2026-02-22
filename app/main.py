@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional, Literal
 from pathlib import Path
@@ -45,6 +46,14 @@ class AnalyzeResponse(BaseModel):
 
 
 app = FastAPI(title="Financial Roaster V2", version="0.1.0")  # Sample files added
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SAVED_DIR = BASE_DIR / "saved_files"
